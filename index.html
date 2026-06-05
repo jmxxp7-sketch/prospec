@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prospec - Controle de Prospecções</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section id="authScreen" class="auth-screen" aria-labelledby="auth-title">
+      <form id="authForm" class="auth-card" autocomplete="on">
+        <div>
+          <p class="eyebrow">Ótica</p>
+          <h1 id="auth-title">Entrar no Prospec</h1>
+        </div>
+
+        <div class="auth-mode" role="group" aria-label="Modo de acesso">
+          <button id="authLoginModeBtn" class="auth-mode-button is-active" type="button">Entrar</button>
+          <button id="authSignupModeBtn" class="auth-mode-button" type="button">Criar conta</button>
+        </div>
+
+        <label>
+          Usuário
+          <input id="authUsername" type="text" autocomplete="username" placeholder="joao" required />
+        </label>
+
+        <label>
+          Senha
+          <span class="password-field">
+            <input id="authPassword" type="password" autocomplete="current-password" placeholder="Sua senha" required minlength="6" />
+            <button id="togglePasswordBtn" class="password-toggle" type="button" aria-label="Mostrar senha">Ver</button>
+          </span>
+        </label>
+
+        <label id="confirmPasswordLabel" hidden>
+          Confirmar senha
+          <span class="password-field">
+            <input id="authPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repita a senha" minlength="6" />
+          </span>
+        </label>
+
+        <p id="authMessage" class="form-error" role="alert"></p>
+
+        <div class="auth-actions">
+          <button id="authSubmitBtn" class="primary-button" type="submit">Entrar</button>
+          <button id="authCancelBtn" class="secondary-button" type="button" hidden>Voltar</button>
+        </div>
+      </form>
+    </section>
+
+    <main id="appShell" class="app-shell" hidden>
+      <section class="topbar" aria-labelledby="app-title">
+        <div class="topbar-row">
+          <div>
+            <p class="eyebrow">Ótica</p>
+            <h1 id="app-title">Controle de prospecções</h1>
+          </div>
+          <div class="top-actions">
+            <div class="today-counter" aria-label="Prospecções feitas hoje">
+              <span id="topTodayProspects">0</span>
+              <small>Hoje</small>
+            </div>
+            <button id="analysisToggle" class="analysis-button" type="button" aria-expanded="false" aria-controls="analysisPanel">
+              Análise
+            </button>
+            <button id="returnAdminBtn" class="secondary-button" type="button" hidden>Voltar admin</button>
+            <button id="logoutBtn" class="secondary-button" type="button">Sair</button>
+          </div>
+        </div>
+
+        <section id="adminView" class="admin-view" aria-labelledby="admin-title" hidden>
+          <div class="admin-header">
+            <div>
+              <p class="eyebrow">Administração</p>
+              <h2 id="admin-title">Visão geral das lojas</h2>
+            </div>
+            <button id="adminSettingsBtn" class="primary-button" type="button">Configurar</button>
+          </div>
+
+          <div class="admin-overview-grid">
+            <div class="admin-overview-card">
+              <span id="adminDailyProspects">0</span>
+              <small>Prospecções hoje</small>
+              <strong id="adminDailyReturns">0 voltaram</strong>
+            </div>
+            <div class="admin-overview-card">
+              <span id="adminWeeklyProspects">0</span>
+              <small>Prospecções semana</small>
+              <strong id="adminWeeklyReturns">0 voltaram</strong>
+            </div>
+            <div class="admin-overview-card">
+              <span id="adminMonthlyProspects">0</span>
+              <small>Prospecções mês</small>
+              <strong id="adminMonthlyReturns">0 voltaram</strong>
+            </div>
+            <div class="admin-overview-card">
+              <span id="adminYearlyProspects">0</span>
+              <small>Prospecções ano</small>
+              <strong id="adminYearlyReturns">0 voltaram</strong>
+            </div>
+          </div>
+
+          <div id="adminStoreGrid" class="admin-store-grid"></div>
+        </section>
+
+        <div id="adminSettingsOverlay" class="analysis-overlay" hidden>
+          <section class="admin-settings-panel" aria-labelledby="admin-settings-title">
+            <div class="admin-settings-header">
+              <div>
+                <p class="eyebrow">Configuração</p>
+                <h2 id="admin-settings-title">Administrar lojas</h2>
+              </div>
+              <button id="adminSettingsClose" class="icon-button" type="button" aria-label="Fechar configurações">&#215;</button>
+            </div>
+
+            <section class="admin-store-settings-panel" aria-labelledby="admin-store-settings-title">
+              <div>
+                <p class="eyebrow">Desempenho</p>
+                <h3 id="admin-store-settings-title">Meta e cor por loja</h3>
+              </div>
+              <div id="adminStoreSettingsList" class="admin-store-settings-list"></div>
+              <p id="adminStoreSettingsMessage" class="form-error" role="alert"></p>
+            </section>
+
+            <section class="admin-store-create-panel" aria-labelledby="admin-store-create-title">
+              <div>
+                <p class="eyebrow">Lojas</p>
+                <h3 id="admin-store-create-title">Criar login de loja</h3>
+              </div>
+              <div class="admin-store-create-grid">
+                <label>
+                  Nome da loja
+                  <input id="newStoreName" type="text" placeholder="Loja Centro" />
+                </label>
+                <label>
+                  Usuário
+                  <input id="newStoreUsername" type="text" placeholder="centro" />
+                </label>
+                <label>
+                  Senha
+                  <span class="password-field">
+                    <input id="newStorePassword" type="password" minlength="6" />
+                    <button id="newStorePasswordToggleBtn" class="password-toggle" type="button">Ver</button>
+                  </span>
+                </label>
+                <button id="createStoreBtn" class="primary-button" type="button">Criar loja</button>
+              </div>
+              <p id="createStoreMessage" class="form-error" role="alert"></p>
+            </section>
+
+            <section class="admin-password-panel" aria-labelledby="admin-password-title">
+              <div>
+                <p class="eyebrow">Acesso</p>
+                <h3 id="admin-password-title">Redefinir senha de uma loja</h3>
+                <p class="helper-text">A senha atual fica criptografada e não pode ser exibida. Defina uma nova senha quando precisar.</p>
+              </div>
+              <div class="admin-password-grid">
+                <label>
+                  Conta
+                  <select id="passwordAccountSelect"></select>
+                </label>
+                <label>
+                  Nova senha
+                  <span class="password-field">
+                    <input id="adminNewPassword" type="password" autocomplete="new-password" minlength="6" />
+                    <button id="adminPasswordToggleBtn" class="password-toggle" type="button">Ver</button>
+                  </span>
+                </label>
+                <label>
+                  Confirmar senha
+                  <input id="adminConfirmPassword" type="password" autocomplete="new-password" minlength="6" />
+                </label>
+                <button id="saveAdminPasswordBtn" class="primary-button" type="button">Salvar senha</button>
+              </div>
+              <p id="adminPasswordMessage" class="form-error" role="alert"></p>
+            </section>
+          </section>
+        </div>
+
+        <div id="analysisOverlay" class="analysis-overlay" hidden>
+          <section id="analysisPanel" class="analysis-panel" aria-labelledby="analysis-title">
+            <div class="analysis-header">
+              <div>
+                <p class="eyebrow">Estatísticas</p>
+                <h2 id="analysis-title">Análise das prospecções</h2>
+              </div>
+              <div class="analysis-actions">
+                <label class="goal-field">
+                  Meta diária
+                  <input id="dailyGoalInput" type="number" min="1" step="1" value="15" />
+                </label>
+                <button id="analysisClose" class="icon-button" type="button" aria-label="Fechar análise">&#215;</button>
+              </div>
+            </div>
+
+            <div class="summary-grid compact-summary" aria-label="Resumo geral">
+              <div class="summary-item">
+                <span id="totalProspects">0</span>
+                <small>Registrados</small>
+              </div>
+              <div class="summary-item">
+                <span id="returnedProspects">0</span>
+                <small>Voltaram</small>
+              </div>
+              <div class="summary-item">
+                <span id="todayProspects">0</span>
+                <small>Hoje</small>
+              </div>
+            </div>
+
+            <div class="period-stats">
+              <section class="period-card" aria-labelledby="made-title">
+                <h3 id="made-title">Prospecções feitas</h3>
+                <div class="period-grid">
+                  <div>
+                    <span id="weekProspects">0</span>
+                    <small>Semana</small>
+                  </div>
+                  <div>
+                    <span id="monthProspects">0</span>
+                    <small>Mês</small>
+                  </div>
+                  <div>
+                    <span id="yearProspects">0</span>
+                    <small>Ano</small>
+                  </div>
+                </div>
+              </section>
+
+              <section class="period-card return-period-card" aria-labelledby="returned-title">
+                <h3 id="returned-title">Clientes que voltaram</h3>
+                <div class="period-grid">
+                  <div>
+                    <span id="weekReturns">0</span>
+                    <small>Semana</small>
+                  </div>
+                  <div>
+                    <span id="monthReturns">0</span>
+                    <small>Mês</small>
+                  </div>
+                  <div>
+                    <span id="yearReturns">0</span>
+                    <small>Ano</small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <section class="calendar-panel" aria-labelledby="calendar-title">
+              <div class="calendar-header">
+                <div>
+                  <h3 id="calendar-title">Calendário de meta</h3>
+                  <p>Vermelho está longe da meta, verde está perto. Ao passar a meta, o dia brilha.</p>
+                </div>
+                <div class="calendar-controls">
+                  <button id="prevMonthBtn" class="icon-button" type="button" aria-label="Mês anterior">&#8249;</button>
+                  <strong id="calendarMonthLabel"></strong>
+                  <button id="nextMonthBtn" class="icon-button" type="button" aria-label="Próximo mês">&#8250;</button>
+                </div>
+              </div>
+              <div id="calendarGrid" class="calendar-grid" aria-label="Calendário de prospecções por dia"></div>
+            </section>
+          </section>
+        </div>
+      </section>
+
+      <section id="operationWorkspace" class="workspace">
+        <aside class="panel form-panel" aria-labelledby="form-title">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Novo contato</p>
+              <h2 id="form-title">Registrar prospecção</h2>
+            </div>
+            <button id="clearFormBtn" class="icon-button" type="button" title="Limpar formulário" aria-label="Limpar formulário">
+              &#8634;
+            </button>
+          </div>
+
+          <form id="prospectForm" autocomplete="off">
+            <input type="hidden" id="editingId" />
+
+            <label>
+              Nome
+              <input id="nameInput" name="name" type="text" placeholder="Joao da Silva" />
+            </label>
+
+            <label>
+              Telefone
+              <input id="phoneInput" name="phone" type="tel" placeholder="(19)000000000" />
+            </label>
+
+            <label>
+              CPF
+              <input id="cpfInput" name="cpf" type="text" inputmode="numeric" placeholder="123.456.789-00" />
+            </label>
+
+            <label>
+              Anotações
+              <textarea id="notesInput" name="notes" rows="5" placeholder="Interessada em óculos de grau, voltar com receita."></textarea>
+            </label>
+
+            <section class="tag-editor" aria-labelledby="tag-editor-title">
+              <div class="tag-editor-header">
+                <span id="tag-editor-title">Etiquetas</span>
+              </div>
+              <div id="tagOptions" class="tag-options"></div>
+            </section>
+
+            <fieldset class="status-picker">
+              <legend>Probabilidade</legend>
+              <label class="status-option">
+                <input type="radio" name="color" value="red" />
+                <span class="swatch swatch-red"></span>
+                <span data-color-label-text="red">Improvável</span>
+              </label>
+              <label class="status-option">
+                <input type="radio" name="color" value="yellow" />
+                <span class="swatch swatch-yellow"></span>
+                <span data-color-label-text="yellow">Pouco provável</span>
+              </label>
+              <label class="status-option">
+                <input type="radio" name="color" value="blue" checked />
+                <span class="swatch swatch-blue"></span>
+                <span data-color-label-text="blue">Provável</span>
+              </label>
+              <label class="status-option">
+                <input type="radio" name="color" value="green" />
+                <span class="swatch swatch-green"></span>
+                <span data-color-label-text="green">Muito provável</span>
+              </label>
+            </fieldset>
+
+            <p id="formError" class="form-error" role="alert"></p>
+
+            <button class="primary-button" type="submit">
+              <span id="submitLabel">Registrar prospecção</span>
+            </button>
+          </form>
+        </aside>
+
+        <section class="panel list-panel" aria-labelledby="list-title">
+          <div class="panel-header list-header">
+            <div>
+              <p class="eyebrow">Hoje</p>
+              <h2 id="list-title">Prospecções do dia</h2>
+            </div>
+          </div>
+
+          <div class="search-row">
+            <label class="search-label">
+              Buscar nas prospecções de hoje
+              <input id="searchInput" type="search" placeholder="Nome, telefone, CPF ou anotação" />
+            </label>
+            <select id="statusFilter" aria-label="Filtrar por status">
+              <option value="all">Todos</option>
+              <option value="not-returned">Não voltaram</option>
+              <option value="returned">Voltaram</option>
+              <option value="red" data-color-filter-option="red">Improvável</option>
+              <option value="yellow" data-color-filter-option="yellow">Pouco provável</option>
+              <option value="blue" data-color-filter-option="blue">Provável</option>
+              <option value="green" data-color-filter-option="green">Muito provável</option>
+            </select>
+          </div>
+
+          <div id="prospectsList" class="prospects-list" aria-live="polite"></div>
+
+          <div id="emptyState" class="empty-state">
+            <strong>Nenhuma prospecção hoje</strong>
+            <span>Cadastre uma nova prospecção para aparecer aqui.</span>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="deleteStoreOverlay" class="analysis-overlay" hidden>
+      <section class="delete-store-panel" aria-labelledby="delete-store-title">
+        <div>
+          <p class="eyebrow">Confirmação</p>
+          <h2 id="delete-store-title">Excluir loja</h2>
+        </div>
+        <p id="deleteStoreText"></p>
+        <label>
+          Senha do admin
+          <input id="deleteStoreAdminPassword" type="password" autocomplete="current-password" />
+        </label>
+        <p id="deleteStoreMessage" class="form-error" role="alert"></p>
+        <div class="delete-store-actions">
+          <button id="cancelDeleteStoreBtn" class="secondary-button" type="button">Cancelar</button>
+          <button id="confirmDeleteStoreBtn" class="primary-button danger-button" type="button">Excluir definitivamente</button>
+        </div>
+      </section>
+    </div>
+
+    <template id="prospectCardTemplate">
+      <article class="prospect-card">
+        <div class="card-main">
+          <div>
+            <h3 class="card-name"></h3>
+            <div class="card-meta"></div>
+          </div>
+          <div class="card-badges">
+            <span class="color-badge"></span>
+            <span class="return-badge"></span>
+          </div>
+        </div>
+        <p class="card-notes"></p>
+        <div class="card-tags"></div>
+        <div class="date-grid">
+          <span><strong>Registrado:</strong> <em class="created-date"></em></span>
+          <span><strong>Voltou:</strong> <em class="returned-date"></em></span>
+        </div>
+        <div class="card-actions">
+          <a class="whatsapp-button" target="_blank" rel="noreferrer">Chamar no WhatsApp</a>
+          <button class="mark-returned-button" type="button">Registrar volta</button>
+          <button class="edit-button" type="button">Editar</button>
+          <button class="delete-button" type="button">Excluir</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
